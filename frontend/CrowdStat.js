@@ -1,14 +1,4 @@
-// const mongoose = require("mongoose");
 
-// const CrowdStatSchema = new mongoose.Schema({
-//   people: Number,
-//   capacity: Number,
-//   density: String,
-//   densityRatio: Number,
-//   timestamp: Date
-// });
-
-// module.exports = mongoose.model("CrowdStat", CrowdStatSchema);
 
 
 const mongoose = require("mongoose");
