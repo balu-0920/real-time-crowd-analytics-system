@@ -1,4 +1,41 @@
+/* .App {
+  text-align: center;
+}
 
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+} */
 
 
 
@@ -34,6 +71,23 @@ body {
   color: #0f172a;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.role-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #2563eb;
+  letter-spacing: 0.02em;
+}
+
 .connection-badge {
   font-size: 0.78rem;
   font-weight: 600;
@@ -43,6 +97,22 @@ body {
 }
 .connection-badge.online  { background: #dcfce7; color: #166534; }
 .connection-badge.offline { background: #fee2e2; color: #991b1b; }
+
+.logout-btn {
+  padding: 4px 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 999px;
+  background: #fff;
+  color: #64748b;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.logout-btn:hover {
+  border-color: #fca5a5;
+  color: #dc2626;
+}
 
 /* ── Nav ─────────────────────────────────────────────────────── */
 .nav-tabs {
@@ -212,7 +282,6 @@ body {
   font-weight: 700;
   color: #0f172a;
   line-height: 1;
-  /* Prevent layout shift from number changes */
   font-variant-numeric: tabular-nums;
 }
 
@@ -495,4 +564,145 @@ body {
   .stat-value   { font-size: 1.5rem; }
   .nav-tab      { padding: 8px 10px; font-size: 0.82rem; }
   .cam-btn      { padding: 6px 10px; font-size: 0.8rem; }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   LOGIN PAGE
+   ══════════════════════════════════════════════════════════════ */
+
+.login-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.login-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 40px 36px 32px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  animation: fadeIn 0.25s ease;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.login-icon {
+  font-size: 2.4rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.login-title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 4px;
+}
+
+.login-subtitle {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.login-portal-heading {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #94a3b8;
+  text-align: center;
+  margin: 0 0 16px;
+}
+
+.login-portals {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.portal-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 20px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.portal-btn:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+}
+
+.portal-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.portal-icon-control {
+  background: #eff6ff;
+  color: #2563eb;
+}
+.portal-btn:hover .portal-icon-control {
+  background: #2563eb;
+  color: #fff;
+}
+
+.portal-icon-security {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+.portal-btn:hover .portal-icon-security {
+  background: #16a34a;
+  color: #fff;
+}
+
+.portal-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.portal-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.portal-desc {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.login-footer-note {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #cbd5e1;
+  text-align: center;
+  margin: 0;
 }
