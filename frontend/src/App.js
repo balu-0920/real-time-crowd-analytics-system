@@ -1,5 +1,8 @@
 
 
+
+
+
 import { useEffect, useState, useCallback, useRef } from "react";
 import { io } from "socket.io-client";
 import {
@@ -9,6 +12,7 @@ import {
 import History from "./History";
 import Settings from "./Settings";
 import CrowdHeatmap from "./Crowdheatmap";
+import Login from "./Login";
 import "./App.css";
 
 const socket = io("http://localhost:5000");
@@ -62,14 +66,41 @@ function CameraSelector({ cameras, selected, onSelect, liveStates }) {
   );
 }
 
+// ── Role badge config ──────────────────────────────────────────────────────────
+const ROLE_LABELS = {
+  control:  "🖥 Control Room",
+  security: "🛡 Security",
+  public:   "👁 Public View",
+};
+
 export default function App() {
-  const [view,       setView]       = useState("live");
-  const [connected,  setConnected]  = useState(false);
-  const [cameras,    setCameras]    = useState([]);
+  // ── Auth ───────────────────────────────────────────────────────────────────
+  const [auth, setAuth] = useState(() => {
+    const role     = sessionStorage.getItem("userRole");
+    const username = sessionStorage.getItem("username");
+    const token    = sessionStorage.getItem("token");
+    return role ? { role, username, token } : null;
+  });
+
+  const handleLogin = (authData) => {
+    setAuth(authData);
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("userRole");
+    sessionStorage.removeItem("username");
+    sessionStorage.removeItem("token");
+    setAuth(null);
+  };
+
+  // ── Dashboard state ────────────────────────────────────────────────────────
+  const [view,        setView]        = useState("live");
+  const [connected,   setConnected]   = useState(false);
+  const [cameras,     setCameras]     = useState([]);
   const [selectedCam, setSelectedCam] = useState(null);
-  const [liveStates, setLiveStates] = useState({});
-  const [displayLatest,   setDisplayLatest]   = useState(null);
-  const [displayChart,    setDisplayChart]    = useState([]);
+  const [liveStates,  setLiveStates]  = useState({});
+  const [displayLatest,  setDisplayLatest]  = useState(null);
+  const [displayChart,   setDisplayChart]   = useState([]);
   const [alerts, setAlerts] = useState([]);
   const alertTimers = useRef({});
 
@@ -101,19 +132,15 @@ export default function App() {
 
     socket.on("live", (data) => {
       const cam = data.camera || "default";
-
       setLiveStates((prev) => ({ ...prev, [cam]: data }));
-
-      setCameras((prev) =>
-        prev.includes(cam) ? prev : [...prev, cam]
-      );
+      setCameras((prev) => prev.includes(cam) ? prev : [...prev, cam]);
 
       const store = getCamData(cam);
       store.latest = data;
       store.chart  = [
         ...store.chart.slice(-30),
         {
-          time:   new Date().toLocaleTimeString([], {
+          time: new Date().toLocaleTimeString([], {
             hour: "2-digit", minute: "2-digit", second: "2-digit",
           }),
           people: data.people,
@@ -131,7 +158,6 @@ export default function App() {
 
     socket.on("alert", ({ camera, message }) => {
       const id = `${camera}-${Date.now()}`;
-
       setAlerts((prev) => [...prev.slice(-4), { id, camera, message }]);
 
       if (Notification.permission === "granted") {
@@ -159,20 +185,38 @@ export default function App() {
     setDisplayChart([...store.chart]);
   }, []);
 
+  // ── Login gate ─────────────────────────────────────────────────────────────
+  if (!auth) return <Login onLogin={handleLogin} />;
+
   const liveData     = displayLatest || {};
   const densityColor = DENSITY_COLORS[liveData.density] || "#6b7280";
+  const isPublic     = auth.role === "public";
+
+  // Public users only see the live tab
+  const availableTabs = isPublic
+    ? ["live"]
+    : ["live", "history", "settings"];
 
   return (
     <div className="app-container">
       <header className="app-header">
         <h1 className="app-title">🚦 Crowd Monitoring Dashboard</h1>
-        <span className={`connection-badge ${connected ? "online" : "offline"}`}>
-          {connected ? "● Live" : "○ Disconnected"}
-        </span>
+        <div className="header-right">
+          {auth.username && (
+            <span className="username-badge">👤 {auth.username}</span>
+          )}
+          <span className="role-badge">{ROLE_LABELS[auth.role]}</span>
+          <span className={`connection-badge ${connected ? "online" : "offline"}`}>
+            {connected ? "● Live" : "○ Disconnected"}
+          </span>
+          <button className="logout-btn" onClick={handleLogout}>
+            {isPublic ? "Switch Portal" : "Sign out"}
+          </button>
+        </div>
       </header>
 
       <nav className="nav-tabs">
-        {["live", "history", "settings"].map((tab) => (
+        {availableTabs.map((tab) => (
           <button
             key={tab}
             className={`nav-tab ${view === tab ? "active" : ""}`}
@@ -181,6 +225,11 @@ export default function App() {
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
+        {isPublic && (
+          <span className="public-tab-note">
+            🔒 History &amp; Settings require login
+          </span>
+        )}
       </nav>
 
       {alerts.length > 0 && (
@@ -202,7 +251,6 @@ export default function App() {
 
       {view === "live" && (
         <div className="view-content">
-
           <div className="cam-selector-row">
             <span className="cam-selector-label">Camera</span>
             <CameraSelector
@@ -280,7 +328,6 @@ export default function App() {
                 Density Heatmap
                 <span className="section-badge">Spatial</span>
               </h2>
-              {/* key="heatmap" — do NOT reset on camera switch so all zones persist */}
               <CrowdHeatmap
                 key="heatmap"
                 latestStat={displayLatest}
@@ -292,8 +339,8 @@ export default function App() {
         </div>
       )}
 
-      {view === "history"  && <History selectedCam={selectedCam} cameras={cameras} />}
-      {view === "settings" && <Settings />}
+      {view === "history"  && !isPublic && <History selectedCam={selectedCam} cameras={cameras} />}
+      {view === "settings" && !isPublic && <Settings token={auth.token} />}
     </div>
   );
 }
