@@ -7,7 +7,7 @@ const cors     = require("cors");
 
 const bcrypt = require("bcrypt");
 const jwt    = require("jsonwebtoken");
-
+ 
 const CrowdStat = require("./models/CrowdStat");
 const { CAMPUS_LOCATIONS } = require("./models/CrowdStat");
 const User = require("./models/User");
