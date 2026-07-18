@@ -114,11 +114,6 @@ node Seed.js              # creates the initial Control Room & Security accounts
 npm start                  # runs on http://localhost:5000
 ```
 
-> **Default seeded credentials** (change these in `Seed.js` before deploying anywhere real):
-> | Portal | Username | Password |
-> |---|---|---|
-> | Control Room | `balu_control` | `605124` |
-> | Security | `balu_security` | `605124` |
 
 ### 3. AI detection service
 
