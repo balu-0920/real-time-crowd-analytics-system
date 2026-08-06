@@ -36,11 +36,14 @@ app.use(express.json({ limit: "2mb" }));
 require("dotenv").config();
 
 mongoose
-  mongoose.connect(
-    process.env.MONGO_URI || "mongodb://127.0.0.1:27017/crowd"
-);
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB error:", err));
+  .connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/crowd")
+  .then(() => {
+    console.log("✅ MongoDB connected");
+    initCronJobs();
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB error:", err);
+  });
 // ─── LOGIN ROUTE ─────────────────────────────────────────
 app.post("/api/auth/login", async (req, res) => {
   try {
