@@ -12,8 +12,8 @@ import Login from "./Login";
 import AIPrediction from "./AIPrediction";
 import "./App.css";
 
-const socket = io("http://localhost:5000");
-// const socket = io("https://real-time-crowd-analytics-system.onrender.com");
+// const socket = io("http://localhost:5000");
+const socket = io("https://real-time-crowd-analytics-system.onrender.com");
 const DENSITY_COLORS = { LOW: "#16a34a", MEDIUM: "#d97706", HIGH: "#dc2626" };
 
 const camDataStore = {};
@@ -142,8 +142,8 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/cameras")
-    // fetch("https://real-time-crowd-analytics-system.onrender.com/api/cameras")
+    // fetch("http://localhost:5000/api/cameras")
+    fetch("https://real-time-crowd-analytics-system.onrender.com/api/cameras")
       .then((r) => r.json())
       .then((list) => {
         setCameras(list);
