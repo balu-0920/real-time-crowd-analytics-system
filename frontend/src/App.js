@@ -1,8 +1,3 @@
-
-
-
-
-
 import { useEffect, useState, useCallback, useRef } from "react";
 import { io } from "socket.io-client";
 import {
@@ -10,13 +5,15 @@ import {
   CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import History from "./History";
+import Analytics from "./Analytics";
 import Settings from "./Settings";
 import CrowdHeatmap from "./Crowdheatmap";
 import Login from "./Login";
+import AIPrediction from "./AIPrediction";
 import "./App.css";
 
 const socket = io("http://localhost:5000");
-
+// const socket = io("https://real-time-crowd-analytics-system.onrender.com");
 const DENSITY_COLORS = { LOW: "#16a34a", MEDIUM: "#d97706", HIGH: "#dc2626" };
 
 const camDataStore = {};
@@ -104,6 +101,40 @@ export default function App() {
   const [alerts, setAlerts] = useState([]);
   const alertTimers = useRef({});
 
+  // ── Security image upload ─────────────────────────────────────────────────
+  const [uploadFile,   setUploadFile]   = useState(null);
+  const [uploading,    setUploading]    = useState(false);
+  const [uploadError,  setUploadError]  = useState("");
+  const [uploadedImage, setUploadedImage] = useState(null); // latest analyzed upload (shown to control + the uploader)
+
+  const handleUpload = async () => {
+    if (!uploadFile) return;
+    setUploading(true);
+    setUploadError("");
+
+    const form = new FormData();
+    form.append("image", uploadFile);
+    form.append("username", auth.username);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/upload-image", {
+        method: "POST",
+        body: form,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setUploadError(data.error || "Upload failed.");
+      } else {
+        setUploadedImage(data);
+        setUploadFile(null);
+      }
+    } catch (err) {
+      setUploadError("Cannot reach server. Is the backend running?");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   useEffect(() => {
     if ("Notification" in window && Notification.permission === "default") {
       Notification.requestPermission();
@@ -112,6 +143,7 @@ export default function App() {
 
   useEffect(() => {
     fetch("http://localhost:5000/api/cameras")
+    // fetch("https://real-time-crowd-analytics-system.onrender.com/api/cameras")
       .then((r) => r.json())
       .then((list) => {
         setCameras(list);
@@ -169,11 +201,16 @@ export default function App() {
       }, 8000);
     });
 
+    socket.on("uploadedImage", (data) => {
+      setUploadedImage(data);
+    });
+
     return () => {
       socket.off("connect");
       socket.off("disconnect");
       socket.off("live");
       socket.off("alert");
+      socket.off("uploadedImage");
       Object.values(alertTimers.current).forEach(clearTimeout);
     };
   }, []);
@@ -192,15 +229,15 @@ export default function App() {
   const densityColor = DENSITY_COLORS[liveData.density] || "#6b7280";
   const isPublic     = auth.role === "public";
 
-  // Public users only see the live tab
+  // Public users see live + prediction; staff also get analytics/history/settings
   const availableTabs = isPublic
-    ? ["live"]
-    : ["live", "history", "settings"];
+    ? ["live", "prediction"]
+    : ["live", "analytics", "history", "settings", "prediction"];
 
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1 className="app-title">🚦 Crowd Monitoring Dashboard</h1>
+        <h1 className="app-title">🚦 CrowdPulse AI — Real-Time Crowd Analytics</h1>
         <div className="header-right">
           {auth.username && (
             <span className="username-badge">👤 {auth.username}</span>
@@ -222,7 +259,9 @@ export default function App() {
             className={`nav-tab ${view === tab ? "active" : ""}`}
             onClick={() => setView(tab)}
           >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === "prediction"
+              ? "AI Prediction"
+              : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
         {isPublic && (
@@ -287,6 +326,78 @@ export default function App() {
           </div>
 
           <div className="charts-row">
+            {auth.role === "security" && (
+              <div className="chart-section">
+                <h2 className="section-title">Upload Image for Analysis</h2>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setUploadFile(e.target.files[0] || null)}
+                />
+                <button
+                  className="save-btn"
+                  style={{ marginTop: 12 }}
+                  onClick={handleUpload}
+                  disabled={uploading || !uploadFile}
+                >
+                  {uploading ? "Analyzing…" : "Upload & Analyze"}
+                </button>
+
+                {uploadError && <p className="login-error">{uploadError}</p>}
+
+                {uploadedImage && (
+                  <div style={{ marginTop: 16 }}>
+                    <img
+                      src={uploadedImage.image}
+                      alt="Analyzed upload"
+                      style={{ width: "100%", borderRadius: 8 }}
+                    />
+                    <p style={{ marginTop: 8 }}>
+                      People: <strong>{uploadedImage.people}</strong> · Density:{" "}
+                      <strong style={{ color: DENSITY_COLORS[uploadedImage.density] }}>
+                        {uploadedImage.density}
+                      </strong>
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {auth.role === "control" && uploadedImage && (
+              <div className="chart-section">
+                <h2 className="section-title">
+                  Security Upload
+                  <span className="section-badge">{uploadedImage.uploadedBy}</span>
+                </h2>
+                <img
+                  src={uploadedImage.image}
+                  alt="Uploaded by security"
+                  style={{ width: "100%", borderRadius: 8 }}
+                />
+                <p style={{ marginTop: 8 }}>
+                  People: <strong>{uploadedImage.people}</strong> · Density:{" "}
+                  <strong style={{ color: DENSITY_COLORS[uploadedImage.density] }}>
+                    {uploadedImage.density}
+                  </strong>{" "}
+                  · {new Date(uploadedImage.timestamp).toLocaleTimeString()}
+                </p>
+              </div>
+            )}
+
+            {auth.role === "control" && selectedCam && (
+              <div className="chart-section">
+                <h2 className="section-title">
+                  Live Camera Feed
+                  <span className="section-badge">{selectedCam}</span>
+                </h2>
+                <img
+                  src={`http://localhost:5001/video_feed/${selectedCam}`}
+                  alt={`Live processed feed for ${selectedCam}`}
+                  style={{ width: "100%", borderRadius: 8, display: "block" }}
+                />
+              </div>
+            )}
+
             <div className="chart-section">
               <h2 className="section-title">
                 Live Crowd Count
@@ -339,8 +450,10 @@ export default function App() {
         </div>
       )}
 
-      {view === "history"  && !isPublic && <History selectedCam={selectedCam} cameras={cameras} />}
-      {view === "settings" && !isPublic && <Settings token={auth.token} />}
+      {view === "analytics" && !isPublic && <Analytics cameras={cameras} selectedCam={selectedCam} />}
+      {view === "history"   && !isPublic && <History selectedCam={selectedCam} cameras={cameras} />}
+      {view === "settings"  && !isPublic && <Settings token={auth.token} />}
+      {view === "prediction" && <AIPrediction cameras={cameras} />}
     </div>
   );
 }
