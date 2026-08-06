@@ -117,7 +117,7 @@ export default function App() {
     form.append("username", auth.username);
 
     try {
-      const res = await fetch("http://localhost:5000/api/upload-image", {
+      const res = await fetch("https://real-time-crowd-analytics-system.onrender.com/api/upload-image", {
         method: "POST",
         body: form,
       });
