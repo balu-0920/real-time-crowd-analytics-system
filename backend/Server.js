@@ -24,21 +24,21 @@ app.use(cors());
 app.use(express.json({ limit: "2mb" }));
 
 //─── MongoDB ─────────────────────────────────────────────
-mongoose
-  .connect("mongodb://127.0.0.1:27017/crowd")
-  .then(() => {
-    console.log("✅ MongoDB connected");
-    initCronJobs();
-  })
-  .catch((err) => console.error("❌ MongoDB error:", err));
-
-
-// require("dotenv").config();
-
 // mongoose
-//   .connect(process.env.MONGO_URI)
-//   .then(() => console.log("✅ MongoDB connected"))
+//   .connect("mongodb://127.0.0.1:27017/crowd")
+//   .then(() => {
+//     console.log("✅ MongoDB connected");
+//     initCronJobs();
+//   })
 //   .catch((err) => console.error("❌ MongoDB error:", err));
+
+
+require("dotenv").config();
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB error:", err));
 // ─── LOGIN ROUTE ─────────────────────────────────────────
 app.post("/api/auth/login", async (req, res) => {
   try {
@@ -376,11 +376,11 @@ io.on("connection", (socket) => {
 
 
 // ─── START SERVER ───────────────────────────────────────
-server.listen(5000, () => {
-  console.log("🚀 Backend running on http://localhost:5000");
-});
-// const PORT = process.env.PORT || 5000;
-
-// server.listen(PORT, () => {
-//   console.log(`🚀 Backend running on port ${PORT}`);
+// server.listen(5000, () => {
+//   console.log("🚀 Backend running on http://localhost:5000");
 // });
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+  console.log(`🚀 Backend running on port ${PORT}`);
+});
