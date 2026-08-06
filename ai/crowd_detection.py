@@ -25,8 +25,8 @@ CAMERAS = {
 
 
 # ---------------- API ----------------
-API_URL        = "http://localhost:5000/api/live-stats"
-THRESHOLDS_URL = "http://localhost:5000/api/thresholds"
+API_URL = "https://real-time-crowd-analytics-system.onrender.com/api/live-stats"
+THRESHOLDS_URL = "https://real-time-crowd-analytics-system.onrender.com/api/thresholds"
 
 POST_INTERVAL = 0.5
 TWILIO_COOLDOWN = 60
