@@ -36,7 +36,9 @@ app.use(express.json({ limit: "2mb" }));
 require("dotenv").config();
 
 mongoose
-  .connect(process.env.MONGO_URI)
+  mongoose.connect(
+    process.env.MONGO_URI || "mongodb://127.0.0.1:27017/crowd"
+);
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("❌ MongoDB error:", err));
 // ─── LOGIN ROUTE ─────────────────────────────────────────
@@ -55,11 +57,11 @@ app.post("/api/auth/login", async (req, res) => {
     if (!match)
       return res.status(401).json({ error: "Invalid password" });
 
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      "secret123",
-      { expiresIn: "1d" }
-    );
+    jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+);
 
     res.json({
       username: user.username,
