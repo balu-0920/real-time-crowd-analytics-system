@@ -45,6 +45,26 @@ mongoose
     console.error("❌ MongoDB error:", err);
   });
 // ─── LOGIN ROUTE ─────────────────────────────────────────
+app.get("/create-users", async (req, res) => {
+  await User.deleteMany({});
+
+  const users = [
+    {
+      username: "balu_control",
+      password: await bcrypt.hash("605124", 10),
+      role: "control",
+    },
+    {
+      username: "balu_security",
+      password: await bcrypt.hash("605124", 10),
+      role: "security",
+    },
+  ];
+
+  await User.insertMany(users);
+
+  res.send("Users created successfully");
+});
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { username, password } = req.body;
