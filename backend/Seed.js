@@ -3,11 +3,10 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const User = require("./models/User");
 
-mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/crowd");
+mongoose.connect(process.env.MONGO_URI);
 
 async function seed() {
-
-  await User.deleteMany();
+  await User.deleteMany({});
 
   const users = [
     {
@@ -16,15 +15,15 @@ async function seed() {
       role: "control"
     },
     {
-      username: "balu_security",              // TODO: replace with the security person's username
-      password: await bcrypt.hash("605124", 10), // TODO: replace with their real password
+      username: "balu_security",
+      password: await bcrypt.hash("605124", 10),
       role: "security"
     }
   ];
 
   await User.insertMany(users);
 
-  console.log("Users created successfully");
+  console.log("Done");
   process.exit();
 }
 
