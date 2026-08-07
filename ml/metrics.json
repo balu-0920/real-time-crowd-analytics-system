@@ -1,0 +1,26 @@
+{
+  "average_people_model": {
+    "selected": "RandomForest",
+    "cv_mae_by_candidate": {
+      "RandomForest": 0.492
+    },
+    "test_metrics": {
+      "MAE": 0.547,
+      "RMSE": 0.766,
+      "R2": 0.161
+    }
+  },
+  "peak_people_model": {
+    "selected": "RandomForest",
+    "cv_mae_by_candidate": {
+      "RandomForest": 2.317
+    },
+    "test_metrics": {
+      "MAE": 0.813,
+      "RMSE": 0.987,
+      "R2": 0.283
+    }
+  },
+  "dataset_rows": 21,
+  "trained_at": "2026-08-06T20:51:36.622488"
+}
