@@ -47,39 +47,40 @@ mongoose
 // ─── LOGIN ROUTE ─────────────────────────────────────────
 app.post("/api/auth/login", async (req, res) => {
   try {
-
     const { username, password } = req.body;
 
+    console.log("Username:", username);
+
+    const users = await User.find({});
+    console.log("Users:", users);
+
     const user = await User.findOne({ username });
+    console.log("Matched user:", user);
 
     if (!user)
       return res.status(401).json({ error: "Invalid username" });
 
     const match = await bcrypt.compare(password, user.password);
+    console.log("Password match:", match);
 
     if (!match)
       return res.status(401).json({ error: "Invalid password" });
 
     const token = jwt.sign(
-  { id: user._id, role: user.role },
-  process.env.JWT_SECRET,
-  { expiresIn: "1d" }
-);
-
-res.json({
-  token,
-  username: user.username,
-  role: user.role,
-});
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
 
     res.json({
+      token,
       username: user.username,
       role: user.role,
-      token
     });
 
   } catch (err) {
-    res.status(500).json({ error: "Login failed" });
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
