@@ -254,6 +254,14 @@ def health():
     except Exception as e:
         return jsonify({"status": "error", "detail": str(e)}), 500
 
-
+@app.errorhandler(Exception)
+def handle_exception(e):
+    import traceback
+    print("❌ PREDICTION ERROR:")
+    traceback.print_exc()
+    return jsonify({
+        "error": str(e),
+        "type": type(e).__name__
+    }), 500
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PREDICTOR_PORT)
