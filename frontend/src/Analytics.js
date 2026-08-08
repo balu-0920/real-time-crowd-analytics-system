@@ -15,7 +15,7 @@ import {
   Cell,
 } from "recharts";
 
-const BASE = "http://localhost:5000";
+const BASE = "https://real-time-crowd-analytics-system.onrender.com";
 const DENSITY_COLORS = { LOW: "#16a34a", MEDIUM: "#d97706", HIGH: "#dc2626" };
 const PALETTE = ["#2563eb", "#7c3aed", "#db2777", "#059669", "#d97706", "#dc2626", "#0284c7"];
 
