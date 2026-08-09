@@ -35,17 +35,13 @@ Raw detections are continuously rolled up into pre-aggregated hourly/daily stati
 
 ## Screenshots
 
-<table>
-  <tr>
-    <td width="33%"><img src="docs/screenshots/prediction-forecast.png" alt="Next-day crowd forecast" /><p align="center"><b>Next-Day Crowd Forecast</b></p></td>
-    <td width="33%"><img src="docs/screenshots/prediction-accuracy.png" alt="Prediction accuracy tracking" /><p align="center"><b>Prediction Accuracy Tracking</b></p></td>
-    <td width="33%"><img src="docs/screenshots/security-upload.png" alt="Security image upload and detection" /><p align="center"><b>Security Upload & Detection</b></p></td>
-  </tr>
-  <tr>
-    <td width="50%"><img src="docs/screenshots/crowd-trendlines.png" alt="Crowd density trendlines" /><p align="center"><b>Crowd Density Trendlines</b></p></td>
-    <td width="50%"><img src="docs/screenshots/live-dashboard.png" alt="Live dashboard and density heatmap" /><p align="center"><b>Live Dashboard & Heatmap</b></p></td>
-  </tr>
-</table>
+| ![Next-Day Crowd Forecast](docs/screenshots/prediction-forecast.png) | ![Prediction Accuracy Tracking](docs/screenshots/prediction-accuracy.png) | ![Security Upload & Detection](docs/screenshots/security-upload.png) |
+|:---:|:---:|:---:|
+| **Next-Day Crowd Forecast** | **Prediction Accuracy Tracking** | **Security Upload & Detection** |
+
+| ![Crowd Density Trendlines](docs/screenshots/crowd-trendlines.png) | ![Live Dashboard & Heatmap](docs/screenshots/live-dashboard.png) |
+|:---:|:---:|
+| **Crowd Density Trendlines** | **Live Dashboard & Heatmap** |
 
 ## Tech Stack
 
