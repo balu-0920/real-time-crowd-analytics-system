@@ -27,18 +27,25 @@ Real-time crowd monitoring platform combining computer vision, a live full-stack
 
 ---
 
-## Architecture
+## Workflow
 
-```mermaid
-flowchart LR
-    CAM[Camera] --> YOLO[YOLOv8 Detection<br/>Python + OpenCV]
-    YOLO -->|REST| API[Node.js / Express API]
-    API <--> DB[(MongoDB)]
-    API <-->|Socket.IO| WEB[React Dashboard]
-    API --> SMS[Twilio SMS Alerts]
-    ML[ML Prediction Service<br/>Flask + scikit-learn] <--> DB
-    API <--> ML
-```
+Raw detections are continuously rolled up into pre-aggregated hourly/daily statistics, so analytics queries stay fast even as historical data grows:
+
+![Analytics Workflow](docs/screenshots/analytics-workflow.png)
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/screenshots/prediction-forecast.png" alt="Next-day crowd forecast" /><p align="center"><b>Next-Day Crowd Forecast</b></p></td>
+    <td width="33%"><img src="docs/screenshots/prediction-accuracy.png" alt="Prediction accuracy tracking" /><p align="center"><b>Prediction Accuracy Tracking</b></p></td>
+    <td width="33%"><img src="docs/screenshots/security-upload.png" alt="Security image upload and detection" /><p align="center"><b>Security Upload & Detection</b></p></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/crowd-trendlines.png" alt="Crowd density trendlines" /><p align="center"><b>Crowd Density Trendlines</b></p></td>
+    <td width="50%"><img src="docs/screenshots/live-dashboard.png" alt="Live dashboard and density heatmap" /><p align="center"><b>Live Dashboard & Heatmap</b></p></td>
+  </tr>
+</table>
 
 ## Tech Stack
 
