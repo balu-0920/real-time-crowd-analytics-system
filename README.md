@@ -31,7 +31,7 @@ Real-time crowd monitoring platform combining computer vision, a live full-stack
 
 Raw detections are continuously rolled up into pre-aggregated hourly/daily statistics, so analytics queries stay fast even as historical data grows:
 
-![Analytics Workflow](docs/screenshots/analytics-workflow.png)
+![Analytics Workflow](docs/screenshots/system-architecture.png)
 
 ## Screenshots
 
